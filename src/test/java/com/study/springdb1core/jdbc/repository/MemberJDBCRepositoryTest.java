@@ -8,9 +8,9 @@ import java.sql.SQLException;
 import java.util.NoSuchElementException;
 import org.junit.jupiter.api.Test;
 
-class MemberRepositoryJDBCTest {
+class MemberJDBCRepositoryTest {
 
-    MemberRepositoryJDBC repository = new MemberRepositoryJDBC();
+    MemberJDBCRepository repository = new MemberJDBCRepository();
 
     @Test
     void crud() throws SQLException {

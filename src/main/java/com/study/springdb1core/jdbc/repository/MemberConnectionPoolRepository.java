@@ -1,6 +1,5 @@
 package com.study.springdb1core.jdbc.repository;
 
-import com.study.springdb1core.jdbc.connection.DBConnectionUtil;
 import com.study.springdb1core.jdbc.domain.Member;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -8,17 +7,22 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.NoSuchElementException;
+import javax.sql.DataSource;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class MemberRepositoryJDBC {
+@RequiredArgsConstructor
+public class MemberConnectionPoolRepository {
+
+    private final DataSource dataSource;
 
     private static final String MEMBER_ID = "member_id";
     private static final String MONEY = "money";
 
 
     public Member save(Member member) throws SQLException {
-        try (Connection con = DBConnectionUtil.getConnection();
+        try (Connection con = getConnection();
             PreparedStatement pstmt = createPreparesStatement(con, member);
             ResultSet generatedKeys = pstmt.getGeneratedKeys()
         ) {
@@ -49,7 +53,7 @@ public class MemberRepositoryJDBC {
     }
 
     public Member findById(Long memberId) throws SQLException {
-        try (Connection con = DBConnectionUtil.getConnection();
+        try (Connection con = getConnection();
             PreparedStatement pstmt = selectPreparedStatement(con, memberId);
             ResultSet rs = pstmt.executeQuery()
         ) {
@@ -76,7 +80,7 @@ public class MemberRepositoryJDBC {
     }
 
     public void update(Member member) throws SQLException {
-        try (Connection con = DBConnectionUtil.getConnection();
+        try (Connection con = getConnection();
             PreparedStatement pstmt = updatePreparedStatement(con, member)
         ) {
             pstmt.executeUpdate();
@@ -95,7 +99,7 @@ public class MemberRepositoryJDBC {
     }
 
     public void delete(long memberId) throws SQLException {
-        try (Connection con = DBConnectionUtil.getConnection();
+        try (Connection con = getConnection();
             PreparedStatement pstmt = deletePreparedStatement(con, memberId)
         ) {
             pstmt.executeUpdate();
@@ -110,6 +114,12 @@ public class MemberRepositoryJDBC {
         PreparedStatement pstmt = con.prepareStatement(sql);
         pstmt.setLong(1, memberId);
         return pstmt;
+    }
+
+    private Connection getConnection() throws SQLException {
+        Connection connection = dataSource.getConnection();
+        log.info("get connection={}, class={}", connection, connection.getClass());
+        return connection;
     }
 
 

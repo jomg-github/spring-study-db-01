@@ -8,22 +8,17 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.NoSuchElementException;
-import javax.sql.DataSource;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-@RequiredArgsConstructor
-public class MemberRepositoryConnectionPool {
-
-    private final DataSource dataSource;
+public class MemberJDBCRepository {
 
     private static final String MEMBER_ID = "member_id";
     private static final String MONEY = "money";
 
 
     public Member save(Member member) throws SQLException {
-        try (Connection con = getConnection();
+        try (Connection con = DBConnectionUtil.getConnection();
             PreparedStatement pstmt = createPreparesStatement(con, member);
             ResultSet generatedKeys = pstmt.getGeneratedKeys()
         ) {
@@ -54,7 +49,7 @@ public class MemberRepositoryConnectionPool {
     }
 
     public Member findById(Long memberId) throws SQLException {
-        try (Connection con = getConnection();
+        try (Connection con = DBConnectionUtil.getConnection();
             PreparedStatement pstmt = selectPreparedStatement(con, memberId);
             ResultSet rs = pstmt.executeQuery()
         ) {
@@ -81,7 +76,7 @@ public class MemberRepositoryConnectionPool {
     }
 
     public void update(Member member) throws SQLException {
-        try (Connection con = getConnection();
+        try (Connection con = DBConnectionUtil.getConnection();
             PreparedStatement pstmt = updatePreparedStatement(con, member)
         ) {
             pstmt.executeUpdate();
@@ -100,7 +95,7 @@ public class MemberRepositoryConnectionPool {
     }
 
     public void delete(long memberId) throws SQLException {
-        try (Connection con = getConnection();
+        try (Connection con = DBConnectionUtil.getConnection();
             PreparedStatement pstmt = deletePreparedStatement(con, memberId)
         ) {
             pstmt.executeUpdate();
@@ -115,12 +110,6 @@ public class MemberRepositoryConnectionPool {
         PreparedStatement pstmt = con.prepareStatement(sql);
         pstmt.setLong(1, memberId);
         return pstmt;
-    }
-
-    private Connection getConnection() throws SQLException {
-        Connection connection = dataSource.getConnection();
-        log.info("get connection={}, class={}", connection, connection.getClass());
-        return connection;
     }
 
 

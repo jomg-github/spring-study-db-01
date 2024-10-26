@@ -12,11 +12,10 @@ import java.sql.SQLException;
 import java.util.NoSuchElementException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.jdbc.datasource.DriverManagerDataSource;
 
-class MemberRepositoryConnectionPoolTest {
+class MemberConnectionPoolRepositoryTest {
 
-    MemberRepositoryConnectionPool repository;
+    MemberConnectionPoolRepository repository;
 
     @BeforeEach
     void setUp() {
@@ -29,7 +28,7 @@ class MemberRepositoryConnectionPoolTest {
         dataSource.setUsername(USERNAME);
         dataSource.setPassword(PASSWORD);
 
-        repository = new MemberRepositoryConnectionPool(dataSource);
+        repository = new MemberConnectionPoolRepository(dataSource);
     }
 
     @Test

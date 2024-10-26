@@ -13,4 +13,12 @@ public class Member {
     public Member(Long money) {
         this.money = money;
     }
+
+    public void increase(Long money) {
+        this.money = this.money + money;
+    }
+
+    public void decrease(Long money) {
+        this.money = this.money - money;
+    }
 }
