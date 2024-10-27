@@ -10,6 +10,11 @@ public class Member {
     private Long memberId;
     private Long money;
 
+    public Member(Long memberId, Long money) {
+        this.memberId = memberId;
+        this.money = money;
+    }
+
     public Member(Long money) {
         this.money = money;
     }

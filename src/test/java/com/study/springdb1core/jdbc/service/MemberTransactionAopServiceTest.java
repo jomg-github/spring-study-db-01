@@ -3,7 +3,6 @@ package com.study.springdb1core.jdbc.service;
 import static com.study.springdb1core.jdbc.connection.ConnectionConst.PASSWORD;
 import static com.study.springdb1core.jdbc.connection.ConnectionConst.URL;
 import static com.study.springdb1core.jdbc.connection.ConnectionConst.USERNAME;
-import static org.assertj.core.api.Assertions.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
@@ -12,7 +11,6 @@ import com.study.springdb1core.jdbc.repository.MemberTransactionRepository;
 import java.sql.SQLException;
 import javax.sql.DataSource;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.aop.support.AopUtils;
@@ -85,7 +83,7 @@ class MemberTransactionAopServiceTest {
     }
 
     @Test
-    @DisplayName("이체 실패 - 트랜잭션 수동 적용")
+    @DisplayName("이체 실패 - @Transactional 적용")
     void test_2() throws SQLException {
         // given
         Member from = memberRepository.findById(FROM_MEMBER_ID_FOR_EXCEPTION);

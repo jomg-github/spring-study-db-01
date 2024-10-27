@@ -7,33 +7,53 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.study.springdb1core.jdbc.domain.Member;
-import com.study.springdb1core.jdbc.repository.MemberTransactionRepository;
-import java.sql.SQLException;
-import org.junit.jupiter.api.BeforeEach;
+import com.study.springdb1core.jdbc.repository.MemberJdbcTemplateRepository;
+import com.study.springdb1core.jdbc.repository.MemberRepository;
+import javax.sql.DataSource;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.jdbc.datasource.DataSourceTransactionManager;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.TestConfiguration;
+import org.springframework.context.annotation.Bean;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
-import org.springframework.transaction.PlatformTransactionManager;
 
-class MemberTransactionTemplateServiceTest {
+@SpringBootTest
+@Slf4j
+class MemberServiceTest {
 
     public static final Long FROM_MEMBER_ID_FOR_EXCEPTION = 25L;
 
-    private MemberTransactionTemplateService memberService;
-    private MemberTransactionRepository memberRepository;
+    @Autowired
+    private MemberTransactionUncheckedExceptionService memberService;
 
-    @BeforeEach
-    void setUp() {
-        DriverManagerDataSource dataSource = new DriverManagerDataSource(URL, USERNAME, PASSWORD);
-        memberRepository = new MemberTransactionRepository(dataSource);
-        PlatformTransactionManager transactionManager = new DataSourceTransactionManager(dataSource);
-        memberService = new MemberTransactionTemplateService(transactionManager, memberRepository);
+    @Autowired
+    private MemberRepository memberRepository;
+
+    @TestConfiguration
+    static class TestConfig {
+
+        @Bean
+        public DataSource dataSource() {
+            return new DriverManagerDataSource(URL, USERNAME, PASSWORD);
+        }
+
+        @Bean
+        public MemberRepository memberRepository(DataSource dataSource) {
+            return new MemberJdbcTemplateRepository(dataSource);
+        }
+
+        @Bean
+        public MemberTransactionUncheckedExceptionService memberService(MemberRepository memberRepository) {
+            return new MemberTransactionUncheckedExceptionService(memberRepository);
+        }
+
     }
 
     @Test
     @DisplayName("정상 이체")
-    void test_1() throws SQLException {
+    void test_1() {
         // given
         long seedMoney = 100000L;
         Member from = memberRepository.save(new Member(seedMoney));
@@ -52,8 +72,8 @@ class MemberTransactionTemplateServiceTest {
     }
 
     @Test
-    @DisplayName("이체 실패 - TransactionalTemplate 적용")
-    void test_2() throws SQLException {
+    @DisplayName("이체 실패 - @Transactional 적용")
+    void test_2() {
         // given
         Member from = memberRepository.findById(FROM_MEMBER_ID_FOR_EXCEPTION);
         long fromSeedMoney = from.getMoney();

@@ -52,7 +52,7 @@ class MemberTransactionManagerServiceTest {
     }
 
     @Test
-    @DisplayName("이체 실패 - 트랜잭션 수동 적용")
+    @DisplayName("이체 실패 - TransactionalManager 적용")
     void test_2() throws SQLException {
         // given
         Member from = memberRepository.findById(FROM_MEMBER_ID_FOR_EXCEPTION);
